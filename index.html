@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implement Client Script & UI Policy (Incident)</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* Navbar */
+        nav {
+            background: #172554;
+            color: white;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav h2 {
+            font-size: 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        nav ul li a:hover {
+            color: #93c5fd;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 430px;
+            padding: 80px 8%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+        }
+
+        .hero-text {
+            max-width: 650px;
+        }
+
+        .hero-text h1 {
+            font-size: 45px;
+            color: #172554;
+            margin-bottom: 20px;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            border: none;
+            padding: 13px 25px;
+            background: #2563eb;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .hero-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .hero-card .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        /* Sections */
+        section {
+            padding: 60px 8%;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #172554;
+            font-size: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+        }
+
+        .card h3 {
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            line-height: 1.6;
+        }
+
+        /* Incident Demo */
+        .demo {
+            background: #172554;
+            color: white;
+        }
+
+        .incident-box {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            color: #1f2937;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 7px;
+            background: #dbeafe;
+            color: #1e40af;
+            display: none;
+        }
+
+        /* Gemini AI */
+        .gemini {
+            background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+        }
+
+        .ai-container {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .ai-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .ai-header h3 {
+            color: #4338ca;
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .ai-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input input {
+            flex: 1;
+        }
+
+        #aiResponse {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f8fafc;
+            border-left: 5px solid #4f46e5;
+            border-radius: 8px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        /* Steps */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .step {
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+        }
+
+        .number {
+            width: 45px;
+            height: 45px;
+            margin: auto auto 15px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero-text h1 {
+                font-size: 32px;
+            }
+
+            .cards,
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-input {
+                flex-direction: column;
+            }
+
+            section {
+                padding: 45px 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <h2>Incident Lab</h2>
+
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#concepts">Concepts</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#gemini">Gemini AI</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+
+        <div class="hero-text">
+
+            <h1>Implement Client Script & UI Policy (Incident)</h1>
+
+            <p>
+                Learn how Client Scripts and UI Policies can control
+                and customize Incident forms in ServiceNow.
+            </p>
+
+            <button class="btn" onclick="scrollToDemo()">
+                Start Interactive Demo
+            </button>
+
+        </div>
+
+        <div class="hero-card">
+            <div class="icon">⚙️</div>
+            <h2>ServiceNow Incident</h2>
+            <p>
+                Interactive learning environment for
+                Client Script and UI Policy concepts.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- Concepts -->
+    <section id="concepts">
+
+        <h2 class="section-title">
+            Core Concepts
+        </h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Client Script</h3>
+
+                <p>
+                    Client Scripts are JavaScript programs that run
+                    on the client side. They can dynamically change
+                    form behavior when users interact with fields.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>UI Policy</h3>
+
+                <p>
+                    UI Policies dynamically control field properties
+                    such as mandatory, visible and read-only states
+                    without requiring complex scripting.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Incident Form</h3>
+
+                <p>
+                    The Incident form is used to record and manage
+                    IT service issues such as problems, requests
+                    and system failures.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Steps -->
+    <section>
+
+        <h2 class="section-title">
+            Implementation Steps
+        </h2>
+
+        <div class="steps">
+
+            <div class="step">
+                <div class="number">1</div>
+                <h3>Create Incident</h3>
+                <p>Open the Incident form.</p>
+            </div>
+
+            <div class="step">
+                <div class="number">2</div>
+                <h3>Configure UI Policy</h3>
+                <p>Set field visibility and mandatory rules.</p>
+            </div>
+
+            <div class="step">
+                <div class="number">3</div>
+                <h3>Add Client Script</h3>
+                <p>Write JavaScript for dynamic behavior.</p>
+            </div>
+
+            <div class="step">
+                <div class="number">4</div>
+                <h3>Test</h3>
+                <p>Verify the Incident form behavior.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Interactive Demo -->
+    <section class="demo" id="demo">
+
+        <h2 class="section-title" style="color:white;">
+            Interactive Incident Demo
+        </h2>
+
+        <div class="incident-box">
+
+            <div class="form-group">
+
+                <label for="priority">
+                    Priority
+                </label>
+
+                <select id="priority" onchange="applyPolicy()">
+
+                    <option value="">
+                        Select Priority
+                    </option>
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option value="medium">
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="impact">
+                    Impact
+                </label>
+
+                <select id="impact">
+
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group" id="descriptionGroup">
+
+                <label for="description">
+                    Incident Description
+                </label>
+
+                <textarea
+                    id="description"
+                    rows="4"
+                    placeholder="Describe the incident..."
+                ></textarea>
+
+            </div>
+
+
+            <button class="btn" onclick="validateIncident()">
+                Submit Incident
+            </button>
+
+            <div id="message" class="message"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Gemini AI -->
+    <section class="gemini" id="gemini">
+
+        <h2 class="section-title">
+            Gemini AI Learning Assistant
+        </h2>
+
+        <div class="ai-container">
+
+            <div class="ai-header">
+
+                <h3>🤖 Learn with Gemini AI</h3>
+
+                <p>
+                    Ask an educational question about Client Scripts,
+                    UI Policies or Incident management.
+                </p>
+
+            </div>
+
+
+            <div class="ai-input">
+
+                <input
+                    type="text"
+                    id="question"
+                    placeholder="Example: What is a Client Script?"
+                >
+
+                <button class="btn" onclick="askGemini()">
+                    Ask AI
+                </button>
+
+            </div>
+
+
+            <div id="aiResponse"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            © 2026 Incident Lab | Client Script & UI Policy Learning
+        </p>
+
+    </footer>
+
+
+    <script>
+
+        // Scroll to demo
+        function scrollToDemo() {
+
+            document
+                .getElementById("demo")
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
+
+        }
+
+
+        // UI Policy simulation
+        function applyPolicy() {
+
+            const priority =
+                document.getElementById("priority").value;
+
+            const description =
+                document.getElementById("description");
+
+            const group =
+                document.getElementById("descriptionGroup");
+
+
+            if (priority === "high") {
+
+                group.style.display = "block";
+
+                description.required = true;
+
+                description.style.border =
+                    "2px solid #ef4444";
+
+            }
+
+            else {
+
+                description.required = false;
+
+                description.style.border =
+                    "1px solid #cbd5e1";
+
+            }
+
+        }
+
+
+        // Incident validation
+        function validateIncident() {
+
+            const priority =
+                document.getElementById("priority").value;
+
+            const description =
+                document.getElementById("description").value;
+
+            const message =
+                document.getElementById("message");
+
+
+            message.style.display = "block";
+
+
+            if (priority === "") {
+
+                message.innerHTML =
+                    "Please select an incident priority.";
+
+                return;
+
+            }
+
+
+            if (priority === "high" &&
+                description.trim() === "") {
+
+                message.innerHTML =
+                    "For High priority incidents, the description is mandatory.";
+
+                return;
+
+            }
+
+
+            message.innerHTML =
+                "Incident submitted successfully! Client Script and UI Policy rules were applied.";
+
+        }
+
+
+        // Gemini AI educational simulation
+        function askGemini() {
+
+            const question =
+                document.getElementById("question").value
+                .toLowerCase();
+
+            const response =
+                document.getElementById("aiResponse");
+
+
+            response.style.display = "block";
+
+
+            if (question.includes("client script")) {
+
+                response.innerHTML =
+                    "<strong>Gemini AI:</strong> " +
+                    "A Client Script is JavaScript that runs on the client side of a ServiceNow form. " +
+                    "It can respond to events such as loading a form, changing a field, or submitting a form.";
+
+            }
+
+            else if (question.includes("ui policy")) {
+
+                response.innerHTML =
+                    "<strong>Gemini AI:</strong> " +
+                    "A UI Policy controls field properties such as visibility, mandatory status, and read-only status based on conditions.";
+
+            }
+
+            else if (question.includes("incident")) {
+
+                response.innerHTML =
+                    "<strong>Gemini AI:</strong> " +
+                    "An Incident represents an unplanned interruption or reduction in the quality of an IT service. " +
+                    "Incident management focuses on restoring normal service as quickly as possible.";
+
+            }
+
+            else {
+
+                response.innerHTML =
+                    "<strong>Gemini AI:</strong> " +
+                    "Try asking about Client Script, UI Policy, or Incident Management.";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
